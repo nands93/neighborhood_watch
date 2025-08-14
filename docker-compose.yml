@@ -1,0 +1,17 @@
+services:
+  go:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: go
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    networks:
+      - neighborhood
+    restart: unless-stopped
+
+networks:
+  neighborhood:
+    driver: bridge
