@@ -3,8 +3,8 @@ NAME=neighborhood_watch
 .PHONY: up down re clean fclean
 
 up:
-	@printf "Launch development configuration ${name}...\n";
-	@docker compose up -d
+	@printf "🚀 Launching ${NAME}...\n"
+	@docker compose up -d --build
 
 down:
 	@printf "🛑 Stopping ${NAME}...\n"
