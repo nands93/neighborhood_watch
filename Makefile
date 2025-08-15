@@ -4,7 +4,7 @@ NAME=neighborhood_watch
 
 up:
 	@printf "🚀 Launching ${NAME}...\n"
-	@docker compose up -d --build
+	@docker compose up -d
 
 down:
 	@printf "🛑 Stopping ${NAME}...\n"
@@ -13,6 +13,7 @@ down:
 re:
 	@printf "♻️ Rebuilding ${NAME}...\n"
 	@$(MAKE) down
+	@docker compose build --no-cache
 	@$(MAKE) up
 
 clean: down
@@ -21,6 +22,6 @@ clean: down
 
 fclean:
 	@printf "☢️  Nuking all docker configurations...\n"
-	@docker stop $$(docker ps -qa) || true
+	@if [ "$$(docker ps -qa)" ]; then docker stop $$(docker ps -qa); fi || true
 	@docker system prune --all --volumes --force
-	@$(MAKE) down --remove-orphans
+	@docker compose down --remove-orphans -v || true

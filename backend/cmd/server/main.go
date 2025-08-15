@@ -14,5 +14,7 @@ func main() {
 	}
 	router := gin.Default()
 	router.GET("/api/v1/health", handler.HealthCheck)
+	router.POST("/api/v1/users", handler.RegisterUser)
+	//router.POST("/api/v1/auth/token", handler.RegisterUser)
 	router.Run()
 }
