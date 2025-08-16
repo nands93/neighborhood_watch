@@ -1,4 +1,6 @@
-# Neighborhood Watch
+# Hyper-Local Community Alert System (Temporary Name: Neighborhood Watch)
+
+> ## 🚧 Status: In development 🚧
 
 A work-in-progress platform for community safety: report and visualize neighborhood alerts on an interactive map, with real-time updates and secure user authentication.
 
