@@ -90,4 +90,4 @@ Legend: ✅ implemented · ⏳ planned
 
 - Project: Neighborhood Watch
 - Issues & Feature Requests: open a GitHub issue in this repository
-- Maintainer: Your Name — your.email@example.com — https://www.linkedin.com/in/your-profile — https://github.com/your-handle
+- Maintainer: Fernando Marques — https://www.linkedin.com/in/nandomarques/ — https://github.com/nands93
