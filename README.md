@@ -53,8 +53,8 @@ Notes:
   - [x] Email validation and password strength checks
   - [x] Secure password hashing with Argon2
 - [x] Integrated database admin tool (pgAdmin)
-- [ ] User Login API (`POST /api/v1/auth/token`)
-  - [ ] JWT token generation
+- [x] User Login API (`POST /api/v1/auth/login`)
+  - [x] JWT token generation
 - [ ] Authentication middleware for protected routes
 - [ ] Alerts API: create and view alerts
 - [ ] Interactive map integration on the frontend
@@ -70,7 +70,7 @@ Notes:
 - Real-time: WebSockets for live alert updates (planned).
 - Infrastructure: Docker + Docker Compose for local development; Makefile for automation.
 
-For deeper details (repository layout, database schema, security choices, etc.), see ARCHITECTURE.md.
+For deeper details (repository layout, database schema, security choices, etc.), see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ---
 
@@ -78,8 +78,9 @@ For deeper details (repository layout, database schema, security choices, etc.),
 
 | Method | Path | Description | Auth | Status |
 | :---: | :--- | :--- | :---: | :---: |
+| GET | /api/v1/health | Health check | No | ✅ |
 | POST | /api/v1/users | Register a new user (validates email, enforces password policy, Argon2 hashing) | No | ✅ |
-| POST | /api/v1/auth/token | Obtain JWT access token (login) | No | ⏳ |
+| POST | /api/v1/auth/login | Obtain JWT access token (login) | No | ✅ |
 | POST | /api/v1/alerts | Create a new alert (geolocated) | Yes (JWT) | ⏳ |
 | GET | /api/v1/alerts | List or query alerts | Optional (JWT) | ⏳ |
 | WS | /api/v1/alerts/stream | Real-time alerts stream (WebSockets) | Yes (JWT) | ⏳ |

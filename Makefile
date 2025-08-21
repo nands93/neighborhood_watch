@@ -27,6 +27,9 @@ clean: down
 
 fclean:
 	@printf "☢️  Nuking all docker configurations...\n"
-	@if [ "$$(docker ps -qa)" ]; then docker stop $$(docker ps -qa); fi || true
-	@docker system prune --all --volumes --force
-	@docker compose down --remove-orphans -v || true
+	@docker ps -qa | xargs -r docker stop
+	@docker system prune --all --force --volumes
+	@docker volume ls -q | xargs -r docker volume rm
+	@docker network prune --force
+	@docker volume prune --force
+	@docker compose down --volumes --remove-orphans
