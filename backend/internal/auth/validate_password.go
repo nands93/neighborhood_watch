@@ -2,7 +2,6 @@ package auth
 
 import (
 	"fmt"
-	"log"
 	"unicode"
 )
 
@@ -27,8 +26,6 @@ func DefaultPasswordStrength() PasswordStrength {
 }
 
 func ValidatePasswordStrength(password string, strength PasswordStrength) []string {
-	// NOSSA NOVA PISTA DE DEBUG:
-	log.Printf("DEBUG: Validando a senha: '%s' (comprimento: %d)", password, len(password))
 	var errors []string
 
 	if len(password) < strength.MinLength {
