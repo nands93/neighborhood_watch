@@ -13,9 +13,18 @@ func main() {
 		fmt.Printf("Fatal error: failed to connect to database: %v", err)
 	}
 	router := gin.Default()
-	router.GET("/api/v1/health", handler.HealthCheck)
-	router.POST("/api/v1/users", handler.RegisterUser)
-	router.POST("/api/v1/auth/login", handler.LoginUser)
-	//router.POST("/api/v1/auth/token", handler.RegisterUser)
+	api := router.Group("/api/v1")
+	{
+		api.GET("/health", handler.HealthCheck)
+		api.POST("/users", handler.RegisterUser)
+		api.POST("/auth/login", handler.LoginUser)
+	}
+	//rotas protegidas
+	authorized := router.Group("/api/v1")
+	authorized.Use(handler.AuthMiddleware())
+	{
+		authorized.GET("/me", handler.GetCurrentUserProfile)
+	}
+
 	router.Run()
 }

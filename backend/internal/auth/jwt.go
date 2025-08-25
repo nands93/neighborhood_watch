@@ -32,3 +32,18 @@ func GenerateJWT(user *model.User) (string, error) {
 
 	return token.SignedString([]byte(secret))
 }
+
+func ValidateJWT(tokenString string) (*AppClaims, error) {
+	secret := os.Getenv("JWT_SECRET")
+	claims := &AppClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secret), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if claims, ok := token.Claims.(*AppClaims); ok && token.Valid {
+		return claims, nil
+	}
+	return nil, fmt.Errorf("invalid token")
+}
