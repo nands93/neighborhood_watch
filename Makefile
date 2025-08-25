@@ -26,10 +26,7 @@ clean: down
 	@docker system prune -a -f
 
 fclean:
-	@printf "☢️  Nuking all docker configurations...\n"
 	@docker ps -qa | xargs -r docker stop
-	@docker system prune --all --force --volumes
-	@docker volume ls -q | xargs -r docker volume rm
+	@docker system prune --all --force
 	@docker network prune --force
-	@docker volume prune --force
-	@docker compose down --volumes --remove-orphans
+	@docker compose -f docker-compose.yml down --remove-orphans || true
