@@ -55,7 +55,7 @@ Notes:
 - [x] Integrated database admin tool (pgAdmin)
 - [x] User Login API (`POST /api/v1/auth/login`)
   - [x] JWT token generation
-- [ ] Authentication middleware for protected routes
+- [x] Authentication middleware for protected routes
 - [ ] Alerts API: create and view alerts
 - [ ] Interactive map integration on the frontend
 - [ ] Real-time notifications via WebSockets
