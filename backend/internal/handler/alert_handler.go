@@ -7,12 +7,10 @@ import (
 )
 
 func AlertHandler(c *gin.Context) {
-	v, ok := c.Get("claims")
-	if !ok {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "no claims in context"})
+	userID := c.GetInt64("userID")
+	if userID == 0 {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthenticated"})
 		return
 	}
-
-	var userID string
 
 }
