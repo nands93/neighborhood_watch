@@ -3,6 +3,7 @@ package handler
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"vizinhanca/internal/auth"
 
@@ -23,10 +24,26 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		claims, err := auth.ValidateJWT(token)
 		if err != nil {
-			log.Printf("Token validation error: %v", err) // Logamos o erro para nós.
+			log.Printf("Token validation error: %v", err)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 			return
 		}
+
+		var userID int64
+
+		if claims.UserID != 0 {
+			userID = claims.UserID
+		} else if claims.Subject != "" {
+			if id, err := strconv.ParseInt(claims.Subject, 10, 64); err == nil {
+				userID = id
+			}
+		}
+
+		if userID == 0 {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "user id not found in token"})
+		}
+
+		c.Set("userID", userID)
 		c.Set("claims", claims)
 		c.Next()
 	}
