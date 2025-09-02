@@ -8,22 +8,34 @@ import (
 )
 
 func CreateAlert(ctx context.Context, alert *model.Alert) error {
-	location := fmt.Sprintf("POINT(%f %f)", alert.Location.Long, alert.Location.Lat)
-	result := "INSERT INTO alerts (title, description, category, location, user_id) VALUES ($1, $2, $3, ST_GeogFromText($4), $5)"
-	commandTag, err := database.DB.Exec(ctx, result, alert.Title, alert.Description, alert.Category, location, alert.UserID)
+	location := fmt.Sprintf("POINT(%f %f)", alert.Location.Lng, alert.Location.Lat)
+	result := `
+        INSERT INTO alerts (title, description, category, location, user_id) 
+        VALUES ($1, $2, $3, ST_GeogFromText($4), $5)
+        RETURNING id, created_at, updated_at, ST_AsText(location)`
+
+	var locationWKT string
+	err := database.DB.QueryRow(ctx, result,
+		alert.Title,
+		alert.Description,
+		alert.Category,
+		location,
+		alert.UserID,
+	).Scan(&alert.ID, &alert.CreatedAt, &alert.UpdatedAt, &locationWKT)
 	if err != nil {
-		return fmt.Errorf("error inserting alert: %w", err)
+		return fmt.Errorf("error inserting alert and returning id/timestamps: %w", err)
 	}
-	if commandTag.RowsAffected() != 1 {
-		return fmt.Errorf("no rows were inserted")
+
+	if _, err := fmt.Sscanf(locationWKT, "POINT(%f %f)", &alert.Location.Lng, &alert.Location.Lat); err != nil {
+		return fmt.Errorf("error parsing returned location: %w", err)
 	}
 	return nil
 }
 
 func GetAlerts(ctx context.Context, lat, lng, radius float64) ([]model.Alert, error) {
-	getLocation := `id, title, description, category, user_id, created_at, updated_at, ST_AsText(location) as location 
+	getLocation := `SELECT id, title, description, category, user_id, created_at, updated_at, ST_AsText(location) as location 
 	FROM alerts
-	WHERE ST_DWithin(location, ST_MakePoint($1, $2), $3)
+	WHERE ST_DWithin(location, ST_MakePoint($1, $2)::geography, $3)
 	ORDER BY ST_Distance(location, ST_MakePoint($1, $2)::geography) ASC;
 	`
 
@@ -42,17 +54,13 @@ func GetAlerts(ctx context.Context, lat, lng, radius float64) ([]model.Alert, er
 			return nil, fmt.Errorf("error scanning alert row: %w", err)
 		}
 
-		var lng, lat float64
-		if _, err := fmt.Sscanf(locationWKT, "POINT(%f %f)", &lng, &lat); err != nil {
+		if _, err := fmt.Sscanf(locationWKT, "POINT(%f %f)", &alert.Location.Lng, &alert.Location.Lat); err != nil {
 			return nil, fmt.Errorf("error parsing location WKT: %w", err)
 		}
-		alert.Location = model.Point{Lat: lat, Long: lng}
-
 		alerts = append(alerts, alert)
 	}
-
-	if rows.Err() != nil {
-		return nil, fmt.Errorf("error iterating over alert rows: %w", rows.Err())
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating alert rows: %w", err)
 	}
 
 	return alerts, nil

@@ -67,13 +67,11 @@ func RegisterUser(c *gin.Context) {
 }
 
 func GetCurrentUserProfile(c *gin.Context) {
-	// Pegamos os claims que o nosso middleware adicionou ao contexto.
 	claims, exists := c.Get("claims")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Claims not found in context"})
 		return
 	}
 
-	// Retornamos os claims como JSON para o cliente.
 	c.JSON(http.StatusOK, gin.H{"user_profile": claims})
 }

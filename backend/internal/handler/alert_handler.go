@@ -3,6 +3,7 @@ package handler
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"vizinhanca/internal/auth"
 	"vizinhanca/internal/model"
 	"vizinhanca/internal/repository"
@@ -55,4 +56,32 @@ func AlertHandler(c *gin.Context) {
 		"message": "Alert created successfully",
 		"alert":   alertToSave,
 	})
+}
+
+func GetAlertsHandler(c *gin.Context) {
+	lat, err := strconv.ParseFloat(c.Query("lat"), 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing 'lat' parameter"})
+		return
+	}
+
+	lng, err := strconv.ParseFloat(c.Query("lng"), 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing 'lng' parameter"})
+		return
+	}
+
+	radius, err := strconv.ParseFloat(c.Query("radius"), 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing 'radius' parameter"})
+		return
+	}
+
+	alerts, err := repository.GetAlerts(c.Request.Context(), lat, lng, radius)
+	if err != nil {
+		log.Printf("ERROR: Failed to get alerts: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve alerts"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"alerts": alerts})
 }
