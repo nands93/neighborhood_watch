@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"time"
 	"vizinhanca/internal/database"
 	"vizinhanca/internal/handler"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,8 +15,21 @@ func main() {
 		fmt.Printf("Fatal error: failed to connect to database: %v", err)
 	}
 
-	// --- Rotas Abertas ---
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		// Em produção, você deve restringir isso para o domínio exato do seu frontend.
+		// Ex: AllowOrigins: []string{"https://www.meusite.com"},
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	// --- Rotas Abertas ---
+
 	api := router.Group("/api/v1")
 	{
 		api.GET("/health", handler.HealthCheck)
