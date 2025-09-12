@@ -13,3 +13,16 @@ export async function login(username: string, password: string) {
     throw error;
   }
 }
+
+export async function getAlerts(lat: number, lng: number, radius: number, token: string) {
+  try {
+    const response = await axios.get(`${API_URL}/alerts`, {
+      params: { lat, lng, radius },
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.alerts;
+  } catch (error) {
+    console.error("Failed to fetch alerts:", error);
+    throw error;
+  }
+}

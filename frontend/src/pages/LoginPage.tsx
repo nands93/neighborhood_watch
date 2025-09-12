@@ -15,8 +15,8 @@ export function LoginPage() {
     try {
       const data = await login(username, password);
       
-      console.log('Login bem-sucedido!', data);
-      alert('Login realizado com sucesso! Token: ' + data.token);
+      localStorage.setItem('authToken', data.token);
+      alert('Login realizado com sucesso!');
 
       // TODO: Salvar o token e redirecionar o usuário
     } catch (err) {
